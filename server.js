@@ -46,7 +46,7 @@ let tickets = [
 ];
 
 app.use(async (request, response) => {
-    const { method, id } = request.query;
+    const {method, id} = request.query;
     switch (method) {
         case "allTickets":
             logger.info('All tickets has been called');
@@ -57,7 +57,7 @@ app.use(async (request, response) => {
             if (!ticket) {
                 response
                     .status(404)
-                    .send(JSON.stringify({ message: "Ticket not found" }))
+                    .send(JSON.stringify({message: "Ticket not found"}))
                     .end();
                 break;
             }
@@ -79,7 +79,7 @@ app.use(async (request, response) => {
                 response.send(JSON.stringify(newTicket)).end();
             } catch (error) {
                 logger.error(`Error creating new ticket: ${error.message}`);
-                response.status(500).send(JSON.stringify({ error: error.message }));
+                response.status(500).send(JSON.stringify({error: error.message}));
             }
             break;
         }
@@ -93,7 +93,7 @@ app.use(async (request, response) => {
                 logger.warn(`Ticket not found: ${id}`);
                 response
                     .status(404)
-                    .send(JSON.stringify({ message: "Ticket not found" }))
+                    .send(JSON.stringify({message: "Ticket not found"}))
                     .end();
             }
             break;
@@ -109,7 +109,22 @@ app.use(async (request, response) => {
                 logger.warn(`Ticket not found: ${id}`);
                 response
                     .status(404)
-                    .send(JSON.stringify({ message: "Ticket not found" }))
+                    .send(JSON.stringify({message: "Ticket not found"}))
+                    .end();
+            }
+            break;
+        }
+        case "changeTicketStatus": {
+            const ticket = tickets.find((ticket) => ticket.id === id);
+            if (ticket) {
+                Object.assign(ticket, {status: !ticket.status});
+                logger.info(`Ticket status updated: ${JSON.stringify(ticket)}`);
+                response.send(JSON.stringify(tickets));
+            }else{
+                logger.warn(`Ticket not found: ${id}`);
+                response
+                    .status(404)
+                    .send(JSON.stringify({message: "Ticket not found"}))
                     .end();
             }
             break;
@@ -119,7 +134,8 @@ app.use(async (request, response) => {
             response.status(404).end();
             break;
     }
-});
+})
+;
 
 const port = process.env.PORT || 7070;
 
